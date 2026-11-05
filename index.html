@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Argento Tools · WoW Forever</title>
+<meta name="description" content="Herramientas y addons gratis y de código abierto para WoW Forever: forever-lint, Addon Sentry, Bitácora, Recordame, Bingo de la Guild, Taller y Listos para la raid.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@500&family=Cinzel:wght@700&display=swap">
+<style>
+:root {
+  --bg: #12181d; --bg-2: #171f25; --line: #243038; --ink: #e8edf0; --ink-soft: #9fb0ba;
+  --teal: #5fb3ba; --gold: #d8a845;
+  --parchment: #f2e3c0; --parchment-deep: #e4cf9e; --wood: #3d2516; --pink: #3a2313; --gold-deep: #94701f;
+  --display: "Big Shoulders Stencil Display", Impact, sans-serif;
+  --body: "Atkinson Hyperlegible", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+  --tavern: "Cinzel", Georgia, serif;
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); color-scheme: dark; }
+body {
+  margin: 0; font: 17px/1.55 var(--body); color: var(--ink);
+  background:
+    radial-gradient(70% 50% at 50% -10%, color-mix(in srgb, var(--teal) 18%, transparent), transparent 70%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 48px),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 48px),
+    var(--bg);
+  padding: 0 16px 64px;
+}
+a { color: var(--teal); }
+:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.wrap { max-width: 1040px; margin: 0 auto; }
+header { padding: 56px 0 28px; display: grid; gap: 10px; }
+.top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.lang { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.lang button { border: 0; background: transparent; color: var(--ink-soft); font: 700 13px var(--mono); padding: 6px 12px; cursor: pointer; letter-spacing: .08em; }
+.lang button[aria-pressed="true"] { background: var(--teal); color: var(--bg); }
+h1 { margin: 0; font: 800 clamp(52px, 10vw, 96px)/0.95 var(--display); letter-spacing: .01em; text-transform: uppercase; }
+h1 span { color: var(--teal); }
+.lede { max-width: 640px; font-size: 19px; color: var(--ink-soft); margin: 0; }
+.kick { font: 500 13px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--teal); }
+h2 { font: 800 30px/1.1 var(--display); text-transform: uppercase; letter-spacing: .03em; margin: 40px 0 6px; }
+.sub { color: var(--ink-soft); margin: 0 0 18px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 16px; }
+.card {
+  position: relative; display: grid; grid-template-rows: auto 1fr auto; gap: 10px; padding: 20px 20px 16px;
+  background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px; min-width: 0;
+}
+.card .head { display: flex; gap: 14px; align-items: center; }
+.card svg { width: 44px; height: 44px; flex: none; fill: none; stroke: var(--teal); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.card h3 { margin: 0; font: 800 28px/1 var(--display); letter-spacing: .02em; }
+.card .for { font: 500 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft); }
+.card p { margin: 0; color: var(--ink); }
+.card .state { font: 500 12px var(--mono); color: var(--ink-soft); }
+.links { display: flex; flex-wrap: wrap; gap: 8px; }
+.links a { font: 700 14px var(--body); text-decoration: none; padding: 7px 12px; border-radius: 8px; border: 1px solid var(--line); color: var(--ink); background: transparent; }
+.links a.main { background: var(--teal); color: var(--bg); border-color: var(--teal); }
+.links a:hover { border-color: var(--teal); }
+/* the addon family wears parchment, like their banners */
+.card.tavern { background: linear-gradient(180deg, #f7ebcd, var(--parchment)); border-color: var(--parchment-deep); color: var(--pink); box-shadow: inset 0 0 0 4px var(--parchment), inset 0 0 0 5px var(--gold-deep); padding: 24px 24px 20px; }
+.card.tavern h3 { font: 700 22px/1.1 var(--tavern); color: var(--pink); }
+.card.tavern svg { stroke: var(--gold-deep); }
+.card.tavern p, .card.tavern .for, .card.tavern .state { color: #6c4e31; }
+.card.tavern p { color: var(--pink); }
+.card.tavern .links a { border-color: var(--gold-deep); color: var(--pink); }
+.card.tavern .links a.main { background: var(--gold-deep); color: #fff7e0; }
+.support { margin-top: 48px; padding: 24px; border: 1px solid var(--line); border-radius: 12px; display: grid; gap: 8px; background: var(--bg-2); }
+.support h2 { margin: 0; font-size: 26px; }
+.support .links { margin-top: 6px; }
+footer { margin-top: 40px; color: var(--ink-soft); font-size: 14px; display: grid; gap: 4px; }
+footer code { font: 500 13px var(--mono); }
+.note { color: var(--ink-soft); font-size: 14px; }
+[hidden] { display: none !important; }
+@media (prefers-reduced-motion: no-preference) { .card { transition: transform .15s, border-color .15s; } .card:hover { transform: translateY(-2px); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="top">
+    <div class="kick" data-i="kick"></div>
+    <div class="lang" role="group" aria-label="Idioma"><button data-lang="es" aria-pressed="true">ES</button><button data-lang="en">EN</button></div>
+  </div>
+  <h1>Argento <span>Tools</span></h1>
+  <p class="lede" data-i="lede"></p>
+</header>
+
+<h2 data-i="playersTitle"></h2>
+<p class="sub" data-i="playersSub"></p>
+<div class="grid" id="players"></div>
+
+<h2 data-i="authorsTitle"></h2>
+<p class="sub" data-i="authorsSub"></p>
+<div class="grid" id="authors"></div>
+
+<section class="support">
+  <h2 data-i="supportTitle"></h2>
+  <p data-i="supportText"></p>
+  <div class="links">
+    <a class="main" href="https://www.patreon.com/cw/DoblePupi" data-i="patreon"></a>
+    <a href="https://github.com/sponsors/JoseArgento" data-i="sponsors"></a>
+    <a href="https://github.com/JoseArgento" data-i="github"></a>
+  </div>
+</section>
+
+<footer>
+  <div data-i="rules"></div>
+  <div data-i="legal"></div>
+</footer>
+</div>
+
+<script>
+const ICONS = {
+  lint: '<path d="M9 6h11M9 12h11M9 18h11"/><path d="m3 6 1.5 1.5L7 5"/><path d="m3 12 1.5 1.5L7 11"/><path d="m3 18 1.5 1.5L7 17"/>',
+  shield: '<path d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/>',
+  book: '<path d="M12 6c-2-1.5-5-2-8-1.5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5v-13c-3-.5-6 0-8 1.5z"/><path d="M12 6v13"/>',
+  bell: '<path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>',
+  grid: '<rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="M9.2 3.5v17M14.8 3.5v17M3.5 9.2h17M3.5 14.8h17"/><circle cx="12" cy="12" r="1.3"/>',
+  hammer: '<path d="m14 4 6 6-3 3-6-6z"/><path d="M11 7 3.5 14.5a2.1 2.1 0 0 0 3 3L14 10"/>',
+  flag: '<path d="M5 21V4"/><path d="M5 4h11l-2.5 4L16 12H5"/>',
+};
+const GH = "https://github.com/JoseArgento/";
+const PAGES = "https://joseargento.github.io/";
+// links: page = a site to use/read, gh = the repo, dl = where to download (CurseForge pages come when they exist)
+const PROJECTS = [
+  { id: "addon-sentry", fam: "dark", icon: "shield", group: "players", name: "Addon Sentry",
+    es: "Soltá el zip de un addon o pegá un string de WeakAuras y te dice qué puede hacer y si tiene señales de riesgo. Todo pasa en tu navegador.",
+    en: "Drop an addon zip or paste a WeakAuras string and see what it can do and whether it shows risk signals. Everything runs in your browser.",
+    tags: "addons · weakauras · en el navegador", tagsEn: "addons · weakauras · in the browser",
+    page: PAGES + "addon-sentry/", gh: GH + "addon-sentry", pypi: "https://pypi.org/project/addon-sentry/" },
+  { id: "bitacora", fam: "tavern", icon: "book", group: "players", name: "Bitácora",
+    es: "Libreta, diario que se escribe solo, álbum de capturas y recordatorios. Y una web para leerlo afuera del juego, con postales.",
+    en: "Notebook, a journal that writes itself, a screenshot album and reminders. Plus a web page to read it outside the game, postcards included.",
+    tags: "libreta · diario · álbum · recordatorios", tagsEn: "notebook · journal · album · reminders",
+    page: PAGES + "bitacora/", gh: GH + "bitacora", dl: GH + "bitacora/releases" },
+  { id: "recordame", fam: "tavern", icon: "bell", group: "players", name: "Recordame",
+    es: "Solo los recordatorios de Bitácora: por zona, nivel, correo, banco, hora, antes del reinicio y de la guild.",
+    en: "Just Bitácora's reminders: by zone, level, mailbox, bank, time, before the reset and from the guild.",
+    tags: "zona · nivel · reinicio · guild", tagsEn: "zone · level · reset · guild",
+    gh: GH + "bitacora", dl: GH + "bitacora/releases" },
+  { id: "bingo-guild", fam: "tavern", icon: "grid", group: "players", name: "Bingo de la Guild",
+    es: "Un cartón de bingo por semana, igual para toda la guild, con metas medio absurdas. Cartón de oficiales y liga.",
+    en: "One weekly bingo card for the whole guild, with silly goals. Officers' card and a league.",
+    tags: "metas · oficiales · liga", tagsEn: "goals · officers · league",
+    gh: GH + "bingo-guild", dl: GH + "bingo-guild/releases" },
+  { id: "taller", fam: "tavern", icon: "hammer", group: "players", name: "Taller",
+    es: "Pineás recetas y te cuenta los materiales en bolsas, banco y otros personajes. Lista de compras y planos de campamento.",
+    en: "Pin recipes and count materials across bags, bank and alts. Shopping list and camping blueprints.",
+    tags: "profesiones · compras · planos", tagsEn: "professions · shopping · blueprints",
+    gh: GH + "taller", dl: GH + "taller/releases" },
+  { id: "listos-raid", fam: "tavern", icon: "flag", group: "players", name: "Listos para la raid",
+    es: "Cuenta regresiva al 9 de diciembre y quién de la guild tiene nivel, amuleto y resistencia al fuego.",
+    en: "Countdown to December 9 and who in the guild has the level, the amulet and fire resistance.",
+    tags: "nivel · amuleto · resistencia", tagsEn: "level · amulet · fire resistance",
+    gh: GH + "listos-raid", dl: GH + "listos-raid/releases" },
+  { id: "forever-lint", fam: "dark", icon: "lint", group: "authors", name: "forever-lint",
+    es: "Revisa un addon y encuentra lo que se rompe en Forever. Índice de compatibilidad, tabla de API movidas y feed de lo que ya anda.",
+    en: "Lints an addon and finds what breaks on Forever. Compatibility index, relocated-API table and a feed of what works now.",
+    tags: "linter · índice · api", tagsEn: "linter · index · api table",
+    page: PAGES + "forever-lint/", gh: GH + "forever-lint", pypi: "https://pypi.org/project/forever-lint/",
+    extra: [["API", PAGES + "forever-lint/api.html"]] },
+];
+const T = {
+  es: { kick: "WoW Forever · gratis · código abierto", lede: "Addons y herramientas para WoW Forever, hechos en Argentina. Cada uno con tests, revisado con forever-lint y Addon Sentry, en castellano y en inglés.",
+    playersTitle: "Para jugar", playersSub: "Addons para el juego y una web para revisar lo que instalás.",
+    authorsTitle: "Para quien hace addons", authorsSub: "Lo que necesitás para que tu addon cargue en Forever.",
+    supportTitle: "Apoyar", supportText: "Todo es gratis y va a seguir así: no hay funciones pagas. Si te sirvió y querés bancar el tiempo de mantenerlo con cada parche, podés hacerlo acá.",
+    patreon: "Patreon", sponsors: "GitHub Sponsors", github: "GitHub",
+    rules: "Los addons nunca piden nada dentro del juego ni mandan tus datos a ningún lado.",
+    legal: "Sin relación con Blizzard Entertainment. World of Warcraft es marca registrada de Blizzard Entertainment, Inc. Licencia MIT.",
+    forPlayers: "para jugadores", forAuthors: "para autores", page: "Abrir", gh: "Código", dl: "Descargar", pypi: "PyPI", tags: "tags" },
+  en: { kick: "WoW Forever · free · open source", lede: "Addons and tools for WoW Forever, made in Argentina. Each one tested, checked with forever-lint and Addon Sentry, in Spanish and English.",
+    playersTitle: "For playing", playersSub: "Addons for the game and a web page to check what you install.",
+    authorsTitle: "For addon authors", authorsSub: "What you need so your addon loads on Forever.",
+    supportTitle: "Support", supportText: "Everything is free and will stay free: no paid features. If it helped you and you want to back the time it takes to keep it working with every patch, this is the place.",
+    patreon: "Patreon", sponsors: "GitHub Sponsors", github: "GitHub",
+    rules: "The addons never ask for anything in-game and never send your data anywhere.",
+    legal: "Not affiliated with Blizzard Entertainment. World of Warcraft is a trademark of Blizzard Entertainment, Inc. MIT license.",
+    forPlayers: "for players", forAuthors: "for authors", page: "Open", gh: "Source", dl: "Download", pypi: "PyPI", tags: "tagsEn" },
+};
+let lang = "es";
+try { const saved = localStorage.getItem("lang"); if (saved === "en" || saved === "es") lang = saved; } catch (e) {}
+function h(tag, attrs, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) { if (k === "html") n.innerHTML = v; else if (k === "text") n.textContent = v; else n.setAttribute(k, v); }
+  n.append(...kids.filter(Boolean));
+  return n;
+}
+function card(p) {
+  const t = T[lang];
+  const links = [];
+  if (p.page) links.push(h("a", { class: "main", href: p.page, text: t.page }));
+  if (p.dl) links.push(h("a", { class: p.page ? "" : "main", href: p.dl, text: t.dl }));
+  if (p.pypi) links.push(h("a", { href: p.pypi, text: t.pypi }));
+  for (const [label, href] of p.extra || []) links.push(h("a", { href, text: label }));
+  links.push(h("a", { href: p.gh, text: t.gh }));
+  return h("article", { class: "card " + p.fam, id: p.id },
+    h("div", { class: "head" }, h("span", { class: "icon", html: `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[p.icon]}</svg>` }), h("div", {}, h("h3", { text: p.name }), h("div", { class: "for", text: p[t.tags] }))),
+    h("p", { text: p[lang] }),
+    h("div", { class: "links" }, ...links));
+}
+function render() {
+  document.documentElement.lang = lang;
+  const t = T[lang];
+  for (const el of document.querySelectorAll("[data-i]")) el.textContent = t[el.dataset.i];
+  for (const b of document.querySelectorAll(".lang button")) b.setAttribute("aria-pressed", String(b.dataset.lang === lang));
+  document.getElementById("players").replaceChildren(...PROJECTS.filter((p) => p.group === "players").map(card));
+  document.getElementById("authors").replaceChildren(...PROJECTS.filter((p) => p.group === "authors").map(card));
+}
+for (const b of document.querySelectorAll(".lang button")) b.addEventListener("click", () => { lang = b.dataset.lang; try { localStorage.setItem("lang", lang); } catch (e) {} render(); });
+render();
+</script>
+</body>
+</html>
