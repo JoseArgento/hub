@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Argento Tools · WoW Forever</title>
-<meta name="description" content="Herramientas y addons gratis y de código abierto para WoW Forever: forever-lint, Addon Sentry, Bitácora, Recordame, Bingo de la Guild, Taller, Listos para la raid y Centinela.">
+<meta name="description" content="Herramientas y addons gratis y de código abierto para WoW Forever: forever-lint, Addon Sentry, Bitácora, Recordame, Bingo de la Guild, Taller, Listos para la raid, Centinela y Trueque.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@500&family=Cinzel:wght@700&display=swap">
@@ -136,6 +136,7 @@ const ICONS = {
   hammer: '<path d="m14 4 6 6-3 3-6-6z"/><path d="M11 7 3.5 14.5a2.1 2.1 0 0 0 3 3L14 10"/>',
   flag: '<path d="M5 21V4"/><path d="M5 4h11l-2.5 4L16 12H5"/>',
   eye: '<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/>',
+  swap: '<path d="M4 8h13l-3-3"/><path d="M20 16H7l3 3"/>',
 };
 const GH = "https://github.com/JoseArgento/";
 const PAGES = "https://joseargento.github.io/";
@@ -176,6 +177,11 @@ const PROJECTS = [
     en: "Tells you which addon touched the game's gold, mail, trade and auction functions, and warns you before you send a lot of gold.",
     tags: "seguridad · oro · correo", tagsEn: "security · gold · mail",
     gh: GH + "centinela", dl: GH + "centinela/releases" },
+  { id: "trueque", fam: "tavern", icon: "swap", group: "players", name: "Trueque",
+    es: "Un tablón para la guild: quiero, tengo y puedo hacer. Te avisa cuando alguien tiene lo que buscás, y publica lo que te falta en Taller.",
+    en: "A guild board: want, have and can craft. It tells you when someone has what you're after, and posts what Taller says you're missing.",
+    tags: "guild · tablón · taller", tagsEn: "guild · board · taller",
+    gh: GH + "trueque", dl: GH + "trueque/releases" },
   { id: "forever-lint", fam: "dark", icon: "lint", group: "authors", name: "forever-lint",
     es: "Revisa un addon y encuentra lo que se rompe en Forever. Índice de compatibilidad, tabla de API movidas y feed de lo que ya anda.",
     en: "Lints an addon and finds what breaks on Forever. Compatibility index, relocated-API table and a feed of what works now.",
@@ -237,7 +243,7 @@ render();
 
 // News: the first section of each repo's CHANGELOG (raw.githubusercontent.com sends CORS headers) and the
 // forever-lint feed (same host as this page). Anything that fails just stays hidden.
-const REPOS = [["bitacora", "Bitácora · Recordame"], ["bingo-guild", "Bingo de la Guild"], ["taller", "Taller"], ["listos-raid", "Listos para la raid"], ["centinela", "Centinela"], ["forever-lint", "forever-lint"], ["addon-sentry", "Addon Sentry"]];
+const REPOS = [["bitacora", "Bitácora · Recordame"], ["bingo-guild", "Bingo de la Guild"], ["taller", "Taller"], ["listos-raid", "Listos para la raid"], ["centinela", "Centinela"], ["trueque", "Trueque"], ["forever-lint", "forever-lint"], ["addon-sentry", "Addon Sentry"]];
 function firstSection(md) {
   const m = md.match(/^## +(.+)$/m);
   if (!m) return null;
