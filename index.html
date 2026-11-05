@@ -66,6 +66,14 @@ h2 { font: 800 30px/1.1 var(--display); text-transform: uppercase; letter-spacin
 .card.tavern p { color: var(--pink); }
 .card.tavern .links a { border-color: var(--gold-deep); color: var(--pink); }
 .card.tavern .links a.main { background: var(--gold-deep); color: #fff7e0; }
+.news h2 { margin-top: 48px; }
+.change { display: grid; gap: 6px; padding: 14px 16px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 10px; min-width: 0; }
+.change .who { font: 700 15px var(--body); }
+.change .ver { font: 500 12px var(--mono); color: var(--teal); letter-spacing: .08em; }
+.change p { margin: 0; color: var(--ink-soft); font-size: 15px; overflow-wrap: anywhere; }
+.feed { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 6px; }
+.feed li { display: flex; gap: 10px; align-items: baseline; color: var(--ink-soft); font-size: 15px; }
+.feed time { font: 500 12px var(--mono); color: var(--teal); flex: none; }
 .support { margin-top: 48px; padding: 24px; border: 1px solid var(--line); border-radius: 12px; display: grid; gap: 8px; background: var(--bg-2); }
 .support h2 { margin: 0; font-size: 26px; }
 .support .links { margin-top: 6px; }
@@ -94,6 +102,13 @@ footer code { font: 500 13px var(--mono); }
 <h2 data-i="authorsTitle"></h2>
 <p class="sub" data-i="authorsSub"></p>
 <div class="grid" id="authors"></div>
+
+<section class="news" id="news" hidden>
+  <h2 data-i="newsTitle"></h2>
+  <p class="sub" data-i="newsSub"></p>
+  <div class="grid" id="changes"></div>
+  <ul id="feed" class="feed" hidden></ul>
+</section>
 
 <section class="support">
   <h2 data-i="supportTitle"></h2>
@@ -170,7 +185,8 @@ const T = {
     patreon: "Patreon", sponsors: "GitHub Sponsors", github: "GitHub",
     rules: "Los addons nunca piden nada dentro del juego ni mandan tus datos a ningún lado.",
     legal: "Sin relación con Blizzard Entertainment. World of Warcraft es marca registrada de Blizzard Entertainment, Inc. Licencia MIT.",
-    forPlayers: "para jugadores", forAuthors: "para autores", page: "Abrir", gh: "Código", dl: "Descargar", pypi: "PyPI", tags: "tags" },
+    forPlayers: "para jugadores", forAuthors: "para autores", page: "Abrir", gh: "Código", dl: "Descargar", pypi: "PyPI", tags: "tags",
+    newsTitle: "Novedades", newsSub: "Lo último de cada proyecto, leído de su CHANGELOG, y los addons de otros que pasaron a andar en Forever según el índice de forever-lint.", feedTitle: "Ya anda en Forever" },
   en: { kick: "WoW Forever · free · open source", lede: "Addons and tools for WoW Forever, made in Argentina. Each one tested, checked with forever-lint and Addon Sentry, in Spanish and English.",
     playersTitle: "For playing", playersSub: "Addons for the game and a web page to check what you install.",
     authorsTitle: "For addon authors", authorsSub: "What you need so your addon loads on Forever.",
@@ -178,7 +194,8 @@ const T = {
     patreon: "Patreon", sponsors: "GitHub Sponsors", github: "GitHub",
     rules: "The addons never ask for anything in-game and never send your data anywhere.",
     legal: "Not affiliated with Blizzard Entertainment. World of Warcraft is a trademark of Blizzard Entertainment, Inc. MIT license.",
-    forPlayers: "for players", forAuthors: "for authors", page: "Open", gh: "Source", dl: "Download", pypi: "PyPI", tags: "tagsEn" },
+    forPlayers: "for players", forAuthors: "for authors", page: "Open", gh: "Source", dl: "Download", pypi: "PyPI", tags: "tagsEn",
+    newsTitle: "News", newsSub: "The latest from each project, read from its CHANGELOG, and other people's addons that started working on Forever according to the forever-lint index.", feedTitle: "Now works on Forever" },
 };
 let lang = "es";
 try { const saved = localStorage.getItem("lang"); if (saved === "en" || saved === "es") lang = saved; } catch (e) {}
@@ -211,6 +228,49 @@ function render() {
 }
 for (const b of document.querySelectorAll(".lang button")) b.addEventListener("click", () => { lang = b.dataset.lang; try { localStorage.setItem("lang", lang); } catch (e) {} render(); });
 render();
+
+// News: the first section of each repo's CHANGELOG (raw.githubusercontent.com sends CORS headers) and the
+// forever-lint feed (same host as this page). Anything that fails just stays hidden.
+const REPOS = [["bitacora", "Bitácora · Recordame"], ["bingo-guild", "Bingo de la Guild"], ["taller", "Taller"], ["listos-raid", "Listos para la raid"], ["forever-lint", "forever-lint"], ["addon-sentry", "Addon Sentry"]];
+function firstSection(md) {
+  const m = md.match(/^## +(.+)$/m);
+  if (!m) return null;
+  const rest = md.slice(m.index + m[0].length);
+  const end = rest.search(/^## /m);
+  const body = (end === -1 ? rest : rest.slice(0, end)).split("\n").map((l) => l.trim()).filter((l) => l.startsWith("- "));
+  return { ver: m[1], lines: body.slice(0, 2).map((l) => l.slice(2).replace(/\*\*/g, "")) };
+}
+async function news() {
+  const box = document.getElementById("changes");
+  const items = await Promise.all(REPOS.map(async ([repo, name]) => {
+    try {
+      const r = await fetch(`https://raw.githubusercontent.com/JoseArgento/${repo}/main/CHANGELOG.md`, { cache: "no-store" });
+      if (!r.ok) return null;
+      const sec = firstSection(await r.text());
+      return sec && { repo, name, ...sec };
+    } catch (e) { return null; }
+  }));
+  const got = items.filter(Boolean);
+  if (got.length) {
+    box.replaceChildren(...got.map((it) => h("article", { class: "change" }, h("div", { class: "who", text: it.name }), h("div", { class: "ver", text: it.ver }), ...it.lines.map((l) => h("p", { text: l })))));
+    document.getElementById("news").hidden = false;
+  }
+  try {
+    const r = await fetch("https://joseargento.github.io/forever-lint/feed.xml", { cache: "no-store" });
+    if (!r.ok) return;
+    const doc = new DOMParser().parseFromString(await r.text(), "application/xml");
+    const entries = [...doc.querySelectorAll("item")].slice(0, 8);
+    if (!entries.length) return;
+    const ul = document.getElementById("feed");
+    ul.replaceChildren(h("li", {}, h("strong", { text: T[lang].feedTitle })), ...entries.map((e) => {
+      const d = new Date(e.querySelector("pubDate")?.textContent || "");
+      return h("li", {}, h("time", { text: isNaN(d) ? "" : d.toLocaleDateString(lang === "es" ? "es-AR" : "en-GB") }), h("a", { href: e.querySelector("link")?.textContent || "#", text: e.querySelector("title")?.textContent || "" }));
+    }));
+    ul.hidden = false;
+    document.getElementById("news").hidden = false;
+  } catch (e) { /* no feed yet */ }
+}
+news();
 </script>
 </body>
 </html>
